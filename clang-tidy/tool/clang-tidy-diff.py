@@ -55,10 +55,16 @@ def main():
                       help='checks filter, when not specified, use clang-tidy '
                       'default',
                       default='')
+  parser.add_argument('-config', dest='tidy_config', default="",
+                      help='Config for clang tidy')
   parser.add_argument('-path', dest='build_path',
                       help='Path used to read a compile command database.')
-  parser.add_argument('-extra-arg', dest='extra_arg',
-                      action='append', default=[],
+  parser.add_argument('-header-filter', dest='header_filter',
+                      help='Header filter to be used by clang-tidy')
+  parser.add_argument('-extra-clang-tidy-arg', dest='tidy_extra',
+                      action='append',default=[], help='Additional argument to '
+                                                       'append to clang-tidy')
+  parser.add_argument('-extra-arg', dest='extra_arg', default="",
                       help='Additional argument to append to the compiler '
                       'command line.')
   parser.add_argument('-extra-arg-before', dest='extra_arg_before',
@@ -124,10 +130,16 @@ def main():
     command.append('-fix')
   if args.checks != '':
     command.append('-checks=' + quote + args.checks + quote)
+  if args.tidy_config:
+      command.append('-config=%s' % args.tidy_config)
   if args.quiet:
     command.append('-quiet')
   if args.build_path is not None:
     command.append('-p=%s' % args.build_path)
+  if args.header_filter:
+      command.append('-head-filter=%s' % args.header_filter)
+  if args.tidy_extra:
+      command.append(args.tidy_extra)
   command.extend(lines_by_file.keys())
   for arg in args.extra_arg:
       command.append('-extra-arg=%s' % arg)
